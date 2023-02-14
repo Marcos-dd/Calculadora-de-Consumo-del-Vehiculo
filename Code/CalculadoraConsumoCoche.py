@@ -2,14 +2,13 @@ from tkinter import *
 from tkinter import messagebox as MessageBox
 import os, sys
 # -------------------Raíz------------------------------
-
+# creación de la raíz con tkinter, se dejan fijas las dimensiones y se establece el título
 root=Tk()
 
 root.resizable(0,0)
 root.title('Calculadora de consumo')
 
 # -------------------Icono Raíz------------------------------
-
 #Esta función permite que el icono se carge al convertir el .py en .exe
 def resource_path(relative_path):
     try:
@@ -27,12 +26,12 @@ root.iconbitmap(path)
 
 
 # ---------------------Frame---------------------------
-
+# se crea el Frame y se empaqueta en la raíz -> se establecen color y dimensiones
 miFrame=Frame(root, bg='#FFECCA', bd=35, width=500, height=400)
 miFrame.pack()
 
 # -------------------Variables de entrada-----------------------------
-
+# creación de variables vacías que se usarán más adelante para mostrar los resultados por pantalla
 valorCuadroKm = IntVar()
 valorCuadroConsumo = IntVar()
 valorCuadroPrecioComb = IntVar()
@@ -42,7 +41,8 @@ costeMto = IntVar()
 costeTotal = IntVar()
 
 # --------------------Labels----------------------------
-
+# creación de los textos (Labels)
+# se establece para cada uno de ellos título, color, fuente y su posición en la rejilla (grid), alineación del texto y separación con elementos adyacentes. 
 titulo = Label(miFrame, text='Calcula el consumo de tu vehículo', bg='#FFECCA', font=('Calibri',15))
 titulo.grid(row=0, columnspan=2, sticky='w')
 
@@ -69,9 +69,10 @@ resultadoCosteTotal.grid(row=8, column=0, sticky='e', padx=10, pady=10)
 
 
 # -------------------Funciones-----------------------------
-
+# función que se ejecutará al pulsar el botón 'Ayuda'
 def BotonAyuda():
-
+    
+    # mostrará un mensaje con el texto descrito
     MessageBox.showinfo("Ayuda",
     """
 - En el cuadro 'Km totales del trayecto' deberás introducir los kilómetros totales que vas a recorrer y para los cuales quieres hacer el cálculo. NO separar los millares con puntos ni comas.
@@ -90,26 +91,33 @@ Acepta valores decimales con ',' o '.'
 """)
 
 
-
+# función que se ejecutará al pulsar 'Calcular'
 def Calculadora_de_consumo():
 
+    # se establece una excepción que cubre el código ante caracteres no permitidos introducidos por el usuario (tales como letras en lugar de números)
     try:
+        # obtiene los datos introducidos por el usuario y permite que pueda utilizar . o , indistintamente
         kilometros = float(cuadroKm.get().replace(',','.'))
         consumomedio = float(cuadroConsumo.get().replace(',','.'))
         precioporlitro = float(cuadroPrecioComb.get().replace(',','.'))
-
+        
+        # efecúa el cálculo de consumo a partir de los datos introducidos por el usuario
         calculoConsumo = round((kilometros * consumomedio * precioporlitro / 100),2)
         
+        # se establece otra excepción para el caso en que el usuario no seleccione tipo de combustible
         try:
+            # obtiene la selección del usuario en 'Tipo de combustible'
             combustible = cuadroTipoComb.get(cuadroTipoComb.curselection())
-        
+            
+            # realiza el cálculo según el combustible seleccionado
             if combustible == 'Diesel':
                 calculoMto = round((0.039 * kilometros),2)
             elif combustible == 'Gasolina':
                 calculoMto = round((0.056 * kilometros),2)
             else:
                 calculoMto = 0
-
+            
+            # almacena los valores resultantes en las variables vacías creadas al inicio
             costeComb.set(f'{calculoConsumo}€')
             costeMto.set(f'{calculoMto}€')
 
@@ -118,35 +126,38 @@ def Calculadora_de_consumo():
             costeTotal.set(f'{calculoTotal}€')
 
         except:
-            
+            # muestra mensaje de alerta al llegar a esta excepción
             MessageBox.showwarning("Alerta", 
             "Seleccione tipo de combustible.")
     except:
-
+        # muestra mensaje de alerta al llegar a esta excepción
         MessageBox.showwarning("Error", 
             "El formato introducido no es correcto. Introduce en todos los campos sólo números (enteros o decimales).")
 
 
-
+# función que se ejecutará al pulsar 'Reset'
 def Reset():
-
+    
+    # pone todos los valores a 0
     valorCuadroKm.set('0')
     valorCuadroConsumo.set('0')
     valorCuadroPrecioComb.set('0')
 
 
-
+# función que se ejecutará al seleccionar 'Salir'
 def salirAplicación():
-
+    
+    # muestra un mensaje con respuesta de 'Sí' o 'No'
     respuesta = MessageBox.askquestion("Salir","¿Deseas salir de la aplicación?")
     
     if respuesta == 'yes':
         root.destroy()
 
 
-
+# función que se ejecutará al seleccionar 'Acerca de...'
 def AcercaDe():
 
+    # muestra mensaje informativo
     MessageBox.showinfo("Calculadora de Consumo de tu vehículo",
     """Bienvenido a tu Calculadora de Consumo de tu vehículo.
 
@@ -190,28 +201,34 @@ Los costes de mantenimiento se calculan según la siguiente tabla:
  """)
 
 
-
+# función que se ejecutará al seleccionar 'Licencia'
 def AvisoLicencia():
-
+    
+    #muestra un mensaje de alerta
     MessageBox.showwarning("Licencia","Producto bajo Licencia GNU")
 
 
-# -------------------Barra de Menu-----------------------------
+# -------------------Barra de Menú-----------------------------
+# configuración de la barra de menú
 barraMenu = Menu(root)
 root.config(menu=barraMenu)
 
+# creación del submenú Archivo
 menuArchivo = Menu(barraMenu, tearoff=0)
 menuArchivo.add_command(label='Salir', command=salirAplicación)
 
+# creación del submenú Ayuda y sus opciones del desplegable
 menuAyuda = Menu(barraMenu, tearoff=0)
 menuAyuda.add_command(label='Licencia', command=AvisoLicencia)
 menuAyuda.add_command(label='Acerca de...', command=AcercaDe)
 
+# añadimos los submenús a la barra de menú
 barraMenu.add_cascade(label='Archivo', menu=menuArchivo)
 barraMenu.add_cascade(label='Ayuda', menu=menuAyuda)
 
 # -----------------Botones-------------------------------
-
+# creación y ubicación de botones seleccionables
+# también se determinan las funciones que ejecutará cada botón
 botonCalculo = Button(miFrame, text='Calcular', command=Calculadora_de_consumo, cursor='hand2')
 botonCalculo.grid(row=5, column=1, sticky='w', padx=10, pady=10)
 
@@ -222,7 +239,8 @@ botonAyuda = Button(miFrame, text='?', command=BotonAyuda, cursor='hand2')
 botonAyuda.grid(row=0, column=1, sticky='e', padx=10, pady=10)
 
 # ------------------Cuadros de entrada------------------------------
-
+# creación y ubicación de los cuadros de entrada de texto
+# también se asignan los input del usuario a las variables vacías creadas al inicio para poder extraer y trabajar con esos input
 cuadroKm = Entry(miFrame, textvariable=valorCuadroKm)
 cuadroKm.grid(row=1,column=1)
 cuadroKm.config(justify='center')
@@ -235,6 +253,7 @@ cuadroPrecioComb = Entry(miFrame, textvariable=valorCuadroPrecioComb)
 cuadroPrecioComb.grid(row=3,column=1)
 cuadroPrecioComb.config(justify='center')
 
+# este cuadro de texto es especial porque no recibe texto sino que establece las opciones que puede seleccionar el usuario
 cuadroTipoComb = Listbox(miFrame, height=2, cursor='plus',
                         selectforeground="#ffffff",
                         selectbackground="#00aa00",
@@ -258,4 +277,5 @@ cuadroCosteTotal.config(fg='yellow', justify='center', font='bold', width=13)
 
 
 # ------------------------------------------------
+# mantenemos el programa en ejecución
 root.mainloop()
